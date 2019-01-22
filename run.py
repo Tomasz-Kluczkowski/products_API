@@ -16,7 +16,7 @@ def create_app(config_file: str) -> Flask:
     # TODO: Add testing config with the database uri in memory here!
     db.init_app(app)
 
-    from database.models import ma
+    from serializers.serializers import ma
     ma.init_app(app)
 
     return app

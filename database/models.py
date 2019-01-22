@@ -1,8 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
-ma = Marshmallow()
+
+
+class User(db.Model):
+    """
+    Test model to check serializing using marshmallow etc.
+    """
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
 
 
 class NameBase:

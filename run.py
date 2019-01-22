@@ -13,6 +13,7 @@ def create_app(config_file: str) -> Flask:
     app.register_blueprint(api_bp, url_prefix='/api')
 
     from database.models import db
+    # TODO: Add testing config with the database uri in memory here!
     db.init_app(app)
 
     from database.models import ma

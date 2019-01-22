@@ -20,12 +20,9 @@ class UserResource(Resource):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data'}, 400
-
-        data, errors = user_schema.load(json_data)
+        user, errors = user_schema.load(json_data)
         if errors:
             return errors, 422
-
-        user = User(first_name=data['first_name'], last_name=data['last_name'])
 
         db.session.add(user)
         db.session.commit()

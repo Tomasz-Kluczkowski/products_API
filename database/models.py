@@ -11,7 +11,23 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    pets = db.relationship('Pet', backref='user')
 
+    def __repr__(self):
+        return f'<User(first_name={self.first_name}, last_name={self.last_name}, pets={self.pets})>'
+
+
+class Pet(db.Model):
+    """
+    Test relationship - check nested saving
+    """
+    __tablename__ = 'pet'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Pet(name={self.name})>'
 
 # class NameBase:
 #     """

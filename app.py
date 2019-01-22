@@ -1,12 +1,7 @@
-from flask import Flask
+from flask import Blueprint
+from flask_restful import Api
 
-app = Flask(__name__)
+api_bp = Blueprint('api', __name__)
+api = Api(api_bp)
 
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
-if __name__ == '__main__':
-    app.run()
+# api.add_resource()

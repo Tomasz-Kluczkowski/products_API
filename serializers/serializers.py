@@ -1,5 +1,6 @@
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
+from marshmallow_sqlalchemy import ModelSchemaOpts
 
 from database.models import (Allergen, Customer, db, FoodProduct, Group, Material, Pet, Product, User, Tag,
                              TextileProduct)
@@ -7,7 +8,18 @@ from database.models import (Allergen, Customer, db, FoodProduct, Group, Materia
 ma = Marshmallow()
 
 
+class BaseOptions(ModelSchemaOpts):
+    """
+    Basic options class to use in schemas - initially just the session.
+    """
+    def __init__(self, meta, *args, **kwargs):
+        if not hasattr(meta, 'sql_session'):
+            meta.sqla_session = db.session
+        super().__init__(meta, *args, **kwargs)
+
+
 class BaseModelSchema(ma.ModelSchema):
+    OPTIONS_CLASS = BaseOptions
 
     def load(self, data, *args, **kwargs):
         """
@@ -16,13 +28,7 @@ class BaseModelSchema(ma.ModelSchema):
         :return:
         """
         if isinstance(data, list):
-            data = [
-                {'name': item} for item in data
-            ]
-        elif isinstance(data, dict):
-            data = {
-                {'name': key}.update(value) for key, value in data
-            }
+            data = [{'name': item} for item in data]
         elif isinstance(data, str):
             data = {'name': data}
         return super().load(data, *args, **kwargs)
@@ -50,9 +56,10 @@ class TagSchema(BaseModelSchema):
         model = Tag
 
 
-class MaterialSchema(BaseModelSchema):
+class MaterialSchema(ma.ModelSchema):
     class Meta:
         model = Material
+        sqla_session = db.session
 
 
 class AllergenSchema(BaseModelSchema):
@@ -67,11 +74,11 @@ class CustomerSchema(BaseModelSchema):
 
 class ProductSchema(ma.ModelSchema):
     tags = fields.Nested('TagSchema', many=True, required=True)
-    # billOfMaterials = fields.Dict(fields.Nested('MaterialSchema', many=True, required=True))
-    # billOfMaterials = fields.Nested('MaterialSchema', many=True, required=True)
+    materials = fields.Nested('MaterialSchema', many=True, required=True, data_key='billOfMaterials')
 
     class Meta:
         model = Product
+        sqla_session = db.session
 
 
 class FoodProductSchema(ProductSchema):
@@ -81,6 +88,7 @@ class FoodProductSchema(ProductSchema):
 
     class Meta:
         model = FoodProduct
+        sqla_session = db.session
 
 
 class TextileProductSchema(ProductSchema):
@@ -88,3 +96,4 @@ class TextileProductSchema(ProductSchema):
 
     class Meta:
         model = TextileProduct
+        sqla_session = db.session

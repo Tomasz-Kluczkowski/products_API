@@ -1,6 +1,5 @@
 from http import HTTPStatus
 
-from devtools import debug
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
@@ -48,6 +47,16 @@ class ProductResource(Resource):
             return MESSAGES[UNKNOWN_API_KEY], HTTPStatus.FORBIDDEN
         return super().dispatch_request(*args, **kwargs)
 
+    def _cleanse_data(self, data: dict):
+        """
+        Fix billOfMaterials dictionary to be a list of dictionaries.
+        :param data:
+        :return:
+        """
+        materials = data.get('billOfMaterials')
+        if materials:
+            data['billOfMaterials'] = [{'name': key, **value} for key, value in materials.items()]
+
     def get(self):
         schema = SCHEMAS[self.product_type][MANY]
         model = schema.Meta.model
@@ -59,6 +68,7 @@ class ProductResource(Resource):
         json_data = request.get_json(force=True)
         if not json_data:
             return MESSAGES[NO_JSON], HTTPStatus.BAD_REQUEST
+        self._cleanse_data(json_data)
         schema = SCHEMAS[self.product_type][SINGLE]
         model = schema.Meta.model
         try:

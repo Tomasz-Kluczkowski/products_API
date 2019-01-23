@@ -34,7 +34,7 @@ class NameBase:
     """
     Base class for all models requiring a unique name and id fields.
     """
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), nullable=False)
     id = db.Column(db.Integer, primary_key=True)
 
 
@@ -52,14 +52,13 @@ class Tag(db.Model, NameBase):
     __tablename__ = 'tag'
 
 
-class Material(db.Model):
+class Material(db.Model, NameBase):
     """
     Model of material of a product. (i. e. sugar, grams, 20)
     """
     __tablename__ = 'material'
-    id = db.Column(db.Integer, primary_key=True)
-    quantity = db.Column(db.FLOAT)
-    units = db.Column(db.String(50))
+    quantity = db.Column(db.FLOAT, nullable=False)
+    units = db.Column(db.String(50), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
 
@@ -89,7 +88,7 @@ class Product(db.Model, NameBase):
     Base product model to be extended by specific product types.
     """
     __tablename__ = 'product'
-    name = db.Column(db.String(50), unique=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     group = db.relationship('Group', backref='products')
     tags = db.relationship('Tag', secondary=product_tag)

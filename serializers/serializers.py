@@ -1,6 +1,5 @@
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
-from marshmallow_sqlalchemy import ModelSchemaOpts
 
 from database.models import (Allergen, Customer, db, FoodProduct, Group, Material, Pet, Product, User, Tag,
                              TextileProduct)
@@ -8,18 +7,25 @@ from database.models import (Allergen, Customer, db, FoodProduct, Group, Materia
 ma = Marshmallow()
 
 
-class BaseOptions(ModelSchemaOpts):
-    """
-    Basic options class to use in schemas - initially just the session.
-    """
-    def __init__(self, meta):
-        if not hasattr(meta, 'sql_session'):
-            meta.sqla_session = db.session
-        super().__init__(meta)
-
-
 class BaseModelSchema(ma.ModelSchema):
-    OPTIONS_CLASS = BaseOptions
+
+    def load(self, data, *args, **kwargs):
+        """
+        Allows converting keys to dictionaries {'name': 'key'} or lists/dictionaries of them
+        :param data: Any, json data received at the Api endpoint.
+        :return:
+        """
+        if isinstance(data, list):
+            data = [
+                {'name': item} for item in data
+            ]
+        elif isinstance(data, dict):
+            data = {
+                {'name': key}.update(value) for key, value in data
+            }
+        elif isinstance(data, str):
+            data = {'name': data}
+        return super().load(data, *args, **kwargs)
 
 
 class PetSchema(BaseModelSchema):
@@ -59,23 +65,26 @@ class CustomerSchema(BaseModelSchema):
         model = Customer
 
 
-class ProductSchema(BaseModelSchema):
-    group = fields.Nested('Group', required=True)
-    tags = fields.Nested('Tag', many=True, required=True)
-    materials = fields.Nested('Material', many=True, required=True)
+class ProductSchema(ma.ModelSchema):
+    tags = fields.Nested('TagSchema', many=True, required=True)
+    # billOfMaterials = fields.Dict(fields.Nested('MaterialSchema', many=True, required=True))
+    # billOfMaterials = fields.Nested('MaterialSchema', many=True, required=True)
 
     class Meta:
         model = Product
 
 
 class FoodProductSchema(ProductSchema):
-    allergens = fields.Nested('Allergen', many=True, required=True)
-    customer = fields.Nested('Customer', required=True)
+    group = fields.Nested('GroupSchema', required=True, data_key='family')
+    allergens = fields.Nested('AllergenSchema', many=True, required=True)
+    customer = fields.Nested('CustomerSchema', required=True)
 
     class Meta:
         model = FoodProduct
 
 
 class TextileProductSchema(ProductSchema):
+    group = fields.Nested('GroupSchema', required=True, data_key='range')
+
     class Meta:
         model = TextileProduct

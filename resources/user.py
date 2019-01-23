@@ -1,5 +1,7 @@
 from flask import request
 from flask_restful import Resource
+from marshmallow.exceptions import ValidationError
+
 from database.models import db, User
 from serializers.serializers import UserSchema
 
@@ -13,19 +15,20 @@ class UserResource(Resource):
     """
     def get(self):
         users = User.query.all()
-        users = users_schema.dump(users).data
+        users = users_schema.dump(users)
         return {"users": users}, 200
 
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data'}, 400
-        user, errors = user_schema.load(json_data)
-        if errors:
-            return errors, 422
+        try:
+            user = user_schema.load(json_data)
+        except ValidationError as err:
+            return err.messages, 422
 
         db.session.add(user)
         db.session.commit()
 
-        result = user_schema.dump(user).data
+        result = user_schema.dump(user)
         return {'status': 'success', 'user': result}, 201

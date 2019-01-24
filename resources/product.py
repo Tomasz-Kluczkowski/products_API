@@ -53,8 +53,9 @@ class ProductResource(Resource):
         Cleanse data before using it in the schemas. We need to convert simple keys or items
         in the lists / dictionaries to contain 'name' key and value.
         """
+        excluded_keys = ['name', 'colour']
         for key, value in data.items():
-            if isinstance(value, str) and key != 'name':
+            if isinstance(value, str) and key not in excluded_keys:
                 data[key] = {'name': value}
             elif isinstance(value, list):
                 data[key] = [{'name': item} for item in value]

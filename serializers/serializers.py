@@ -25,21 +25,15 @@ class BaseModelSchema(ModelSchema):
     OPTIONS_CLASS = BaseOptions
 
 
-class LoadModelSchema(BaseModelSchema):
+class UniqueModelSchema(BaseModelSchema):
+    """
+    Use in all schemas which should implement unique object names.
+    """
 
-    def load(self, data, *args, **kwargs):
+    def get_instance(self, data: dict):
         """
-        Allows converting keys to dictionaries {'name': 'key'} or lists/dictionaries of them
-        :param data: Any, json data received at the Api endpoint.
-        :return:
+        Returns an existing instance of a given object with parameters in dara or None.
         """
-        if isinstance(data, list):
-            data = [{'name': item} for item in data]
-        elif isinstance(data, str):
-            data = {'name': data}
-        return super().load(data, *args, **kwargs)
-
-    def get_instance(self, data):
         obj = self.session.query(self.opts.model).filter_by(**data).first()
         return obj
 
@@ -56,24 +50,26 @@ class UserSchema(BaseModelSchema):
         model = User
 
 
-class GroupSchema(LoadModelSchema):
+class GroupSchema(UniqueModelSchema):
     class Meta:
         model = Group
+        exclude = ('products', )
 
 
-class TagSchema(LoadModelSchema):
+class TagSchema(UniqueModelSchema):
     class Meta:
         model = Tag
 
 
-class AllergenSchema(LoadModelSchema):
+class AllergenSchema(UniqueModelSchema):
     class Meta:
         model = Allergen
 
 
-class CustomerSchema(LoadModelSchema):
+class CustomerSchema(UniqueModelSchema):
     class Meta:
         model = Customer
+        exclude = ('food_products', )
 
 
 class MaterialSchema(BaseModelSchema):

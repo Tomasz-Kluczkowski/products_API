@@ -47,15 +47,19 @@ class ProductResource(Resource):
             return MESSAGES[UNKNOWN_API_KEY], HTTPStatus.FORBIDDEN
         return super().dispatch_request(*args, **kwargs)
 
-    def _cleanse_data(self, data: dict):
+    @staticmethod
+    def _cleanse_data(data: dict):
         """
-        Fix billOfMaterials dictionary to be a list of dictionaries.
-        :param data:
-        :return:
+        Cleanse data before using it in the schemas. We need to convert simple keys or items
+        in the lists / dictionaries to contain 'name' key and value.
         """
-        materials = data.get('billOfMaterials')
-        if materials:
-            data['billOfMaterials'] = [{'name': key, **value} for key, value in materials.items()]
+        for key, value in data.items():
+            if isinstance(value, str) and key != 'name':
+                data[key] = {'name': value}
+            elif isinstance(value, list):
+                data[key] = [{'name': item} for item in value]
+            elif isinstance(value, dict):
+                data[key] = [{'name': key, **params} for key, params in value.items()]
 
     def get(self):
         schema = SCHEMAS[self.product_type][MANY]

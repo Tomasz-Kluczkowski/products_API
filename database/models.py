@@ -59,7 +59,7 @@ class Material(db.Model, NameBase):
     __tablename__ = 'material'
     name = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.FLOAT, nullable=False)
-    units = db.Column(db.String(50), nullable=False)
+    units = db.Column(db.String(50))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
 

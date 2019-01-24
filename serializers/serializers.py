@@ -10,7 +10,7 @@ ma = Marshmallow()
 
 class BaseOptions(ModelSchemaOpts):
     """
-    Basic options class to use in schemas - initially just the session.
+    Basic options class to use in schemas - initially adds just the session.
     """
     def __init__(self, meta, *args, **kwargs):
         if not hasattr(meta, 'sql_session'):
@@ -19,7 +19,13 @@ class BaseOptions(ModelSchemaOpts):
 
 
 class BaseModelSchema(ma.ModelSchema):
+    """
+    Adds db.session to Meta.
+    """
     OPTIONS_CLASS = BaseOptions
+
+
+class LoadModelSchema(BaseModelSchema):
 
     def load(self, data, *args, **kwargs):
         """
@@ -46,39 +52,37 @@ class UserSchema(BaseModelSchema):
         model = User
 
 
-class GroupSchema(BaseModelSchema):
+class GroupSchema(LoadModelSchema):
     class Meta:
         model = Group
 
 
-class TagSchema(BaseModelSchema):
+class TagSchema(LoadModelSchema):
     class Meta:
         model = Tag
 
 
-class MaterialSchema(ma.ModelSchema):
-    class Meta:
-        model = Material
-        sqla_session = db.session
-
-
-class AllergenSchema(BaseModelSchema):
+class AllergenSchema(LoadModelSchema):
     class Meta:
         model = Allergen
 
 
-class CustomerSchema(BaseModelSchema):
+class CustomerSchema(LoadModelSchema):
     class Meta:
         model = Customer
 
 
-class ProductSchema(ma.ModelSchema):
+class MaterialSchema(BaseModelSchema):
+    class Meta:
+        model = Material
+
+
+class ProductSchema(BaseModelSchema):
     tags = fields.Nested('TagSchema', many=True, required=True)
     materials = fields.Nested('MaterialSchema', many=True, required=True, data_key='billOfMaterials')
 
     class Meta:
         model = Product
-        sqla_session = db.session
 
 
 class FoodProductSchema(ProductSchema):
@@ -88,7 +92,6 @@ class FoodProductSchema(ProductSchema):
 
     class Meta:
         model = FoodProduct
-        sqla_session = db.session
 
 
 class TextileProductSchema(ProductSchema):
@@ -96,4 +99,3 @@ class TextileProductSchema(ProductSchema):
 
     class Meta:
         model = TextileProduct
-        sqla_session = db.session

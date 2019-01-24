@@ -1,6 +1,6 @@
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
-from marshmallow_sqlalchemy import ModelSchemaOpts
+from marshmallow_sqlalchemy import ModelSchemaOpts, ModelSchema
 
 from database.models import (Allergen, Customer, db, FoodProduct, Group, Material, Pet, Product, User, Tag,
                              TextileProduct)
@@ -18,7 +18,7 @@ class BaseOptions(ModelSchemaOpts):
         super().__init__(meta, *args, **kwargs)
 
 
-class BaseModelSchema(ma.ModelSchema):
+class BaseModelSchema(ModelSchema):
     """
     Adds db.session to Meta.
     """
@@ -38,6 +38,10 @@ class LoadModelSchema(BaseModelSchema):
         elif isinstance(data, str):
             data = {'name': data}
         return super().load(data, *args, **kwargs)
+
+    def get_instance(self, data):
+        obj = self.session.query(self.opts.model).filter_by(**data).first()
+        return obj
 
 
 class PetSchema(BaseModelSchema):

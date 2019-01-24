@@ -72,7 +72,6 @@ textile_product_data = [
     }
   },
   {
-    "id": 1,
     "name": "Plain T",
     "colour": "Ocean Blue",
     "range": "Normal",

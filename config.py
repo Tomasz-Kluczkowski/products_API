@@ -19,3 +19,9 @@ MESSAGES = {
     NO_JSON: 'No JSON body supplied',
     INCORRECT_DATA: 'Incorrect product data supplied.'
 }
+
+
+class TestConfig:
+    TESTING = True
+    # in memory database
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'

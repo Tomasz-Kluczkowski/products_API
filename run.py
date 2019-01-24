@@ -11,17 +11,16 @@ def create_app(config_file: str) -> Flask:
 
     from app import api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
-
-    from database.models import db
-    # TODO: Add testing config with the database uri in memory here!
-    db.init_app(app)
-
-    from serializers.serializers import ma
-    ma.init_app(app)
-
     return app
+
+
+def init_db(app):
+    from database.models import db
+    db.init_app(app)
+    return db
 
 
 if __name__ == '__main__':
     app = create_app('config')
+    init_db(app)
     app.run(debug=True)

@@ -1,11 +1,8 @@
-from flask_marshmallow import Marshmallow
 from marshmallow import fields
 from marshmallow_sqlalchemy import ModelSchemaOpts, ModelSchema
 
 from database.models import (Allergen, Customer, db, FoodProduct, Group, Material, Pet, Product, User, Tag,
                              TextileProduct)
-
-ma = Marshmallow()
 
 
 class BaseOptions(ModelSchemaOpts):

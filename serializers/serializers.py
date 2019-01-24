@@ -32,7 +32,7 @@ class UniqueModelSchema(BaseModelSchema):
 
     def get_instance(self, data: dict):
         """
-        Returns an existing instance of a given object with parameters in dara or None.
+        Returns an existing instance of a given object with parameters in data or None.
         """
         obj = self.session.query(self.opts.model).filter_by(**data).first()
         return obj

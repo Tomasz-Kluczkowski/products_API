@@ -90,9 +90,9 @@ class Product(db.Model, NameBase):
     """
     __tablename__ = 'product'
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship('Group', backref='products')
-    tags = db.relationship('Tag', secondary=product_tag)
-    materials = db.relationship('Material')
+    group = db.relationship('Group', backref='products', lazy='joined')
+    tags = db.relationship('Tag', secondary=product_tag, lazy='joined')
+    materials = db.relationship('Material', lazy='joined')
     type = db.Column(db.String(50))
     __mapper_args__ = {
         'polymorphic_identity': 'product',
@@ -113,9 +113,9 @@ class FoodProduct(Product):
     """
     __tablename__ = 'food_product'
     id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)
-    allergens = db.relationship('Allergen', secondary=product_allergens)
+    allergens = db.relationship('Allergen', secondary=product_allergens, lazy='joined')
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
-    customer = db.relationship('Customer', backref='food_products')
+    customer = db.relationship('Customer', backref='food_products', lazy='joined')
     __mapper_args__ = {
         'polymorphic_identity': 'food_product'
     }

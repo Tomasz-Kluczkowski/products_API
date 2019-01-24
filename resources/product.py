@@ -4,6 +4,7 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 from config import MESSAGES, UNKNOWN_API_KEY, NO_JSON, DUPLICATE_PRODUCT
 from database.models import db

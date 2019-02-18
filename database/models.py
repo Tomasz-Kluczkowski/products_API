@@ -11,7 +11,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    pets = db.relationship('Pet', backref='user')
+    pets = db.relationship('Pet', backref='user', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User(first_name={self.first_name}, last_name={self.last_name}, pets={self.pets})>'
@@ -24,10 +24,24 @@ class Pet(db.Model):
     __tablename__ = 'pet'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    toys = db.relationship('Toy', backref='pet', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Pet(name={self.name})>'
+
+
+class Toy(db.Model):
+    """
+    Test relationship - check nested saving
+    """
+    __tablename__ = 'toy'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'))
+
+    def __repr__(self):
+        return f'<Toy(name={self.name})>'
 
 
 class NameBase:

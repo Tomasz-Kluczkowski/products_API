@@ -4,7 +4,6 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import joinedload
 
 from config import MESSAGES, UNKNOWN_API_KEY, NO_JSON, DUPLICATE_PRODUCT
 from database.models import db
@@ -67,7 +66,7 @@ class ProductResource(Resource):
         schema = SCHEMAS[self.product_type][MANY]
         model = schema.Meta.model
         products = model.query.all()
-        products = schema.dump(products)
+        products = schema.dump(products).data
         return {f'{model.__name__}': products}, 200
 
     def post(self):
@@ -78,7 +77,7 @@ class ProductResource(Resource):
         schema = SCHEMAS[self.product_type][SINGLE]
         model = schema.Meta.model
         try:
-            product = schema.load(json_data)
+            product, errors = schema.load(json_data)
         except ValidationError as err:
             return err.messages, HTTPStatus.UNPROCESSABLE_ENTITY
 
@@ -88,5 +87,5 @@ class ProductResource(Resource):
         except IntegrityError:
             return MESSAGES[DUPLICATE_PRODUCT], HTTPStatus.UNPROCESSABLE_ENTITY
 
-        result = schema.dump(product)
+        result = schema.dump(product).data
         return {'status': 'success', f'{model.__name__}': result}, HTTPStatus.CREATED

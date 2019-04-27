@@ -1,5 +1,6 @@
 import json
 
+
 from database.models import FoodProduct, TextileProduct
 from serializers.serializers import FoodProductSchema, TextileProductSchema
 from tests.product_data import food_product_data, textile_product_data
@@ -23,7 +24,7 @@ class TestFoodAPI:
         assert session.query(FoodProduct).count() == 1
         food_product = session.query(FoodProduct).first()
         food_product_schema = FoodProductSchema()
-        assert food_product_schema.dump(food_product) == {
+        assert food_product_schema.dump(food_product).data == {
             'billOfMaterials': [
                 {
                     'units': 'tablespoons',
@@ -191,7 +192,7 @@ class TestTextileAPI:
         assert session.query(TextileProduct).count() == 1
         textile_product = session.query(TextileProduct).first()
         textile_product_schema = TextileProductSchema()
-        assert textile_product_schema.dump(textile_product) == {
+        assert textile_product_schema.dump(textile_product).data == {
             'billOfMaterials': [
                 {
                     'units': 'metres',

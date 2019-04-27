@@ -76,14 +76,16 @@ class MaterialSchema(BaseModelSchema):
 
 class ProductSchema(BaseModelSchema):
     tags = fields.Nested('TagSchema', many=True, required=True)
-    materials = fields.Nested('MaterialSchema', many=True, required=True, data_key='billOfMaterials')
+    materials = fields.Nested(
+        'MaterialSchema', many=True, required=True, dump_to='billOfMaterials', load_from='billOfMaterials'
+    )
 
     class Meta:
         model = Product
 
 
 class FoodProductSchema(ProductSchema):
-    group = fields.Nested('GroupSchema', required=True, data_key='family')
+    group = fields.Nested('GroupSchema', required=True, dump_to='family', load_from='family')
     allergens = fields.Nested('AllergenSchema', many=True, required=True)
     customer = fields.Nested('CustomerSchema', required=True)
 
@@ -92,7 +94,7 @@ class FoodProductSchema(ProductSchema):
 
 
 class TextileProductSchema(ProductSchema):
-    group = fields.Nested('GroupSchema', required=True, data_key='range')
+    group = fields.Nested('GroupSchema', required=True, dump_to='range', load_from='range')
 
     class Meta:
         model = TextileProduct

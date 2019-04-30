@@ -15,14 +15,14 @@ class BaseTask(celery_app.Task):
         debug(kwargs)
 
 
-@celery_app.task(base=BaseTask, bind=True, name='experiments.celery_trial.add')
+@celery_app.task(base=BaseTask, bind=True, name='experiments.celery_trial.add', autoretry_for=(Exception, ), retry_kwargs={'max_retries': 2, 'countdown': 2})
 def add(self, x, y):
     debug('CALCULATING')
-    try:
-        raise Exception
-        return x + y
-    except Exception as exc:
-        self.retry(exc=exc, max_retries=2, countdown=2)
+    # try:
+    raise Exception
+    return x + y
+    # except Exception as exc:
+    #     self.retry(exc=exc, max_retries=2, countdown=2)
 
 
 # result = add.delay(2, 1)

@@ -114,13 +114,14 @@ toy_pm = ToyPM(id=1, name='toy_1', pet_id=1)
 pet_pm = PetPM(id=1, name='Burek', user_id=1, toys=[toy_pm])
 user_pm = UserPM(id=1, first_name='Tomek', last_name='Kluczkowski', pets=[pet_pm])
 
-# pet1 = Pet(id_='pet_id_1', name='Reksio')
-# pet2 = Pet(id_='pet_id_2', name='Burek')
-# user = User(id_='tomek_id', first_name='Tomek', last_name='Kluczkowski', pets=[pet1, pet2])
+pet1 = Pet(id_='pet_id_1', name='Reksio')
+pet2 = Pet(id_='pet_id_2', name='Burek')
+user = User(id_='tomek_id', first_name='Tomek', last_name='Kluczkowski', pets=[pet1, pet2])
 
-# schema = UserSchema()
-#
-# debug(schema.dump(user).data)
+schema = UserSchema()
+
+debug(schema.dump(user).data)
+
 user_schema = UserModelSchema()
 
 debug(user_schema.dump(user_pm).data)

@@ -4,6 +4,7 @@ from marshmallow.exceptions import ValidationError
 
 from database.models import db, User
 from serializers.serializers import UserSchema
+from tasks.tasks import print_hello
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -16,6 +17,7 @@ class UserResource(Resource):
     def get(self):
         users = User.query.all()
         users = users_schema.dump(users)
+        print_hello.delay()
         return {"users": users}, 200
 
     def post(self):
@@ -23,7 +25,7 @@ class UserResource(Resource):
         if not json_data:
             return {'message': 'No input data'}, 400
         try:
-            user = user_schema.load(json_data)
+            user = user_schema.load(json_data).data
         except ValidationError as err:
             return err.messages, 422
 

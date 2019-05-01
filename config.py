@@ -4,6 +4,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_ECHO = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = 'sqlite:///products.db'
+CELERY_BROKER_URL = 'pyamqp://guest@localhost//'
+CELERY_RESULT_BACKEND = 'rpc://'
 
 # API messages keys
 UNKNOWN_API_KEY = 'unknown_api_key'

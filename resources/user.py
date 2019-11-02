@@ -17,7 +17,6 @@ class UserResource(Resource):
     def get(self):
         users = User.query.all()
         users = users_schema.dump(users)
-        print_hello.delay()
         return {"users": users}, 200
 
     def post(self):

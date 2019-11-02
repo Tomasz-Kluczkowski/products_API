@@ -1,4 +1,5 @@
 from celery import Celery
+from easy_profile import EasyProfileMiddleware
 from flask import Flask
 
 
@@ -9,6 +10,7 @@ def create_app(config_file: str) -> Flask:
     """
     app = Flask(__name__)
     app.config.from_object(config_file)
+    app.wsgi_app = EasyProfileMiddleware(app.wsgi_app)
     return app
 
 
@@ -43,6 +45,7 @@ def make_celery(app):
 app = create_app('config')
 init_db(app)
 celery = make_celery(app)
+
 if __name__ == '__main__':
     register_blueprints(app)
     app.run(debug=True)

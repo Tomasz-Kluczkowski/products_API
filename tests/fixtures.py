@@ -1,11 +1,12 @@
 import pytest
 
-from run import create_app, init_db
+from run import create_app, init_db, register_blueprints
 
 
 @pytest.fixture
 def create_test_app():
     app = create_app('config.TestConfig')
+    register_blueprints(app)
     return app
 
 
